@@ -103,6 +103,23 @@ nav .wrap{display:flex;align-items:center;gap:20px;padding:8px max(5vw,16px);fle
 .proj .acts .btn{min-height:44px;padding:0 16px;font-size:15px}
 .proj .vlink{font-size:14px;color:var(--gold);font-weight:700;text-decoration:none}
 .note{font-size:13px;color:var(--mute);margin-top:16px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px}
+.filters button{font:inherit;font-size:15px;min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid var(--bd);background:var(--card);color:var(--ink);cursor:pointer}
+.filters button[aria-pressed=true]{background:var(--navy);border-color:var(--gold);color:var(--gold2)}
+.st{position:absolute;top:12px;left:12px;font-size:13px;font-weight:700;border-radius:999px;padding:2px 12px;color:#fff}
+.st.pre{background:#d9412b}.st.done{background:#1f9d55}
+.proj .pimg{cursor:pointer}.proj .price{font-family:"Noto Serif TC",serif;font-size:22px;color:var(--gold);font-weight:900}
+.proj .desc{color:var(--mute);font-size:15px;margin:0}
+.ph-name{position:relative;color:#f3efe6;font-family:"Noto Serif TC",serif;font-size:26px;font-weight:900;place-self:center}
+dialog{border:0;border-radius:22px;padding:0;max-width:min(720px,94vw);width:100%;background:var(--card);color:var(--ink);box-shadow:0 40px 80px -20px rgba(0,0,0,.6)}
+dialog::backdrop{background:rgba(8,18,36,.7)}
+.dimg{aspect-ratio:2/1;background:linear-gradient(135deg,var(--navy),#1f3a66);position:relative}
+.dimg img{width:100%;height:100%;object-fit:cover}
+.dbody{padding:clamp(20px,3vw,32px);display:grid;gap:14px}
+.dclose{position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.92);font-size:22px;cursor:pointer;color:#0f1b2e}
+.hl{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.hl li{padding-left:22px;position:relative}.hl li::before{content:"";position:absolute;left:4px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--gold)}
+.gate{background:var(--soft);border-radius:14px;padding:16px}
 /* truth */
 .truth{background:var(--soft)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px;margin-top:32px}
@@ -234,11 +251,13 @@ footer a{text-decoration:none}footer a:hover{text-decoration:underline}
 </div></section>
 
 <section class="band" id="projects"><div class="wrap">
-  <div class="row"><div><h2>推薦建案</h2><p class="lead">小靖實地看過、親自篩選的曼谷建案。想看完整價目表、格局圖與最新優惠，按「LINE 詢問此建案」直接問我。</p></div>
-  <a class="btn b-line" href="https://line.me/R/ti/p/@bkkhouse" target="_blank" rel="noopener">在 LINE 看全部建案</a></div>
+  <div class="row"><div><h2>推薦建案</h2><p class="lead">小靖實地看過、親自篩選的曼谷建案。點選建案看重點介紹，也可以免費索取完整建案簡介。</p></div>
+  <a class="btn b-line" href="https://line.me/R/ti/p/@bkkhouse" target="_blank" rel="noopener">LINE 詢問最新建案</a></div>
+  <div class="filters" role="group" aria-label="篩選建案"><button type="button" data-f="all" aria-pressed="true">全部</button><button type="button" data-f="pre" aria-pressed="false">預售</button><button type="button" data-f="done" aria-pressed="false">已完工</button></div>
   <div class="projs" id="projs"></div>
   <p class="note">價格與戶數會隨銷售狀況變動，實際以建商最新報價為準。</p>
 </div></section>
+<dialog id="pd" aria-labelledby="pd-t"><div class="dimg" id="pd-img"></div><button class="dclose" type="button" id="pd-x" aria-label="關閉">×</button><div class="dbody" id="pd-b"></div></dialog>
 
 <section class="band truth"><div class="wrap">
   <h2>買泰國房之前，你該先知道的事</h2>
@@ -349,11 +368,27 @@ document.getElementById('svc').innerHTML=svc.map(([i,t,d])=>`<div class="svc"><d
 
 const LINEMSG=t=>'https://line.me/R/oaMessage/@bkkhouse/?'+encodeURIComponent(t);
 const projs=[
- {n:'XT Ekkamai',tag:'富人區・Ekkamai',dev:'Sansiri',area:'Ekkamai（日本區）',price:'不到 400 萬泰銖起',pts:'私人會所、寵物友善公寓',v:'De28UVDn_oQ',img:''},
- {n:'Aspire Rama 4',tag:'市中心・素坤逸',dev:'AP Thailand',area:'Rama 4／素坤逸生活圈',price:'總價 200 多萬泰銖起',pts:'近 BTS 捷運、頂樓河景視野',v:'SCwusYCP1Zg',img:''}];
+ {id:'xt10-ekkamai',n:'XT 10 Ekkamai',st:'pre',price:'390 萬泰銖起',area:'Ekkamai 日本富人區',dev:'Sansiri',d:'位於 Ekkamai 日本富人區核心地帶，旁邊就是日本超市 Donki 百貨，是該區少見的寵物友善公寓。',h:['Ekkamai 日本富人區核心地段','步行可達日本超市 Donki 百貨','稀有寵物友善公寓'],v:'De28UVDn_oQ',img:'img/projects/xt10-ekkamai.jpg'},
+ {id:'aspire',n:'Aspire Sukhumvit-Rama 4',st:'done',price:'200 多萬泰銖起',area:'素坤逸／Rama 4',dev:'',d:'總價 200 多萬泰銖就能入主曼谷市中心素坤逸，頂樓擁有無敵河景視野，小靖已實地看屋開箱。',h:['市中心素坤逸生活圈','頂樓河景視野','已完工，可實地看屋'],v:'SCwusYCP1Zg',img:''},
+ {id:'xelf',n:'Xelf by Sansiri',st:'pre',price:'359 萬泰銖起',area:'通羅／Rama 4',dev:'Sansiri',d:'坐擁通羅與拉瑪 4 雙核心，3 分鐘可達 BTS Thong Lor 通羅站，位處市中心精華地段，遠眺昭披耶河。',h:['3 分鐘到 BTS Thong Lor 通羅站','通羅、拉瑪 4 雙核心','遠眺昭披耶河'],v:'',img:'img/projects/xelf.jpg'},
+ {id:'nue-rama9',n:'諾博尚璽',st:'pre',price:'350 萬泰銖起',area:'Rama 9 拉瑪九',dev:'',d:'位處 Rama 9 拉瑪九核心地帶，距離 MRT Rama 9 地鐵站 450 公尺，走路只要 6 分鐘，該區域已一戶難求。',h:['MRT Rama 9 站步行 6 分鐘','拉瑪九新商業核心','區域供給稀少'],v:'',img:'img/projects/nue-rama9.jpg'},
+ {id:'life-rama4-asoke',n:'Life Rama4-Asoke',st:'done',price:'459 萬泰銖起',area:'Rama 4 新商業區',dev:'',d:'位於曼谷新商業區 Rama 4 拉瑪四路，與 One Bangkok、Dusit Central Park、詩麗吉皇后會議中心為鄰。',h:['鄰近 One Bangkok','鄰近 Dusit Central Park','鄰近詩麗吉皇后會議中心'],v:'',img:'img/projects/life-rama4-asoke.jpg'},
+ {id:'valles-haus',n:'Valles Haus',st:'pre',price:'440 萬泰銖起',area:'Onnut 安努／T77 社區',dev:'Sansiri',d:'位在泰國前三大建商 Sansiri 總部所在的獨立社區 T77，距離 BTS Onnut 安努站不遠，在曼谷市區也能擁有離囂不離城的生活。',h:['Sansiri 總部 T77 獨立社區','BTS Onnut 安努站生活圈','新潮寵物友善公寓'],v:'',img:'img/projects/valles-haus.jpg'},
+ {id:'klos-ratchada7',n:'KLOS Ratchada 7 近悅',st:'done',price:'359 萬泰銖',area:'Ratchada 泰國文化中心',dev:'',d:'泰國文化中心站，MRT 藍線與橘線雙軌交匯；BIG C 百貨超市只要 70 公尺，走路 7 分鐘到 24 小時營業的 Street Ratchada。',h:['MRT 藍線、橘線雙軌交匯','BIG C 百貨超市 70 公尺','步行 7 分鐘到 Street Ratchada'],v:'',img:'img/projects/klos-ratchada7.jpg'}];
 const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-document.getElementById('projs').innerHTML=projs.map(p=>`<article class="proj"><div class="pimg">${p.img?`<img src="${esc(p.img)}" alt="${esc(p.n)}" loading="lazy">`:''}<span class="tag">${esc(p.tag)}</span></div><div class="pb"><h3>${esc(p.n)}</h3><dl><dt>開發商</dt><dd>${esc(p.dev)}</dd><dt>地段</dt><dd>${esc(p.area)}</dd><dt>價格</dt><dd>${esc(p.price)}</dd><dt>特色</dt><dd>${esc(p.pts)}</dd></dl>${p.v?`<a class="vlink" href="https://www.youtube.com/watch?v=${esc(p.v)}" target="_blank" rel="noopener">看小靖實地開箱影片</a>`:''}<div class="acts"><a class="btn b-line" href="${LINEMSG('你好，我想了解「'+p.n+'」的價格與格局')}" target="_blank" rel="noopener">LINE 詢問此建案</a><a class="btn b-ghost" href="#contact" data-proj="${esc(p.n)}">預約看屋</a></div></div></article>`).join('');
-document.getElementById('projs').addEventListener('click',e=>{const a=e.target.closest('[data-proj]');if(!a)return;const n=document.getElementById('f-note');if(!n.value)n.value='想預約看屋：'+a.dataset.proj;});
+const stl={pre:'預售',done:'已完工'};
+const pic=p=>p.img?`<img src="${esc(p.img)}" alt="${esc(p.n)}" loading="lazy">`:`<span class="ph-name">${esc(p.n)}</span>`;
+const pg=document.getElementById('projs');
+const render=f=>{pg.innerHTML=projs.filter(p=>f==='all'||p.st===f).map(p=>`<article class="proj"><div class="pimg" data-open="${p.id}">${pic(p)}<span class="st ${p.st}">${stl[p.st]}</span></div><div class="pb"><h3>${esc(p.n)}</h3><p class="desc">${esc(p.area)}</p><p class="price">${esc(p.price)}</p><div class="acts"><button class="btn b-gold" type="button" data-open="${p.id}">看建案重點</button><a class="btn b-line" href="${LINEMSG('你好，我想索取「'+p.n+'」的完整建案資料')}" target="_blank" rel="noopener">索取資料</a></div></div></article>`).join('')};
+render('all');
+document.querySelector('.filters').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;document.querySelectorAll('.filters button').forEach(x=>x.setAttribute('aria-pressed',x===b));render(b.dataset.f)});
+const dlg=document.getElementById('pd');
+pg.addEventListener('click',e=>{const o=e.target.closest('[data-open]');if(!o)return;const p=projs.find(x=>x.id===o.dataset.open);
+ document.getElementById('pd-img').innerHTML=pic(p)+`<span class="st ${p.st}">${stl[p.st]}</span>`;
+ document.getElementById('pd-b').innerHTML=`<h3 id="pd-t" style="font-size:26px;font-family:'Noto Serif TC',serif">${esc(p.n)}</h3><p class="price" style="margin:0">${esc(p.price)}</p><p style="margin:0;color:var(--mute)">${esc(p.d)}</p><ul class="hl">${p.h.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>${p.dev?`<p style="margin:0;font-size:14px;color:var(--mute)">開發商：${esc(p.dev)}</p>`:''}${p.v?`<a class="card-link" style="color:var(--gold);font-weight:700;text-decoration:none" href="https://www.youtube.com/watch?v=${esc(p.v)}" target="_blank" rel="noopener">看小靖實地開箱影片</a>`:''}<div class="gate"><b>想看完整價目表、格局圖與付款方式？</b><p style="margin:6px 0 12px;font-size:15px;color:var(--mute)">加 LINE 免費索取完整建案簡介，或直接預約一對一看屋諮詢。</p><div class="cta" style="margin:0"><a class="btn b-line" href="${LINEMSG('你好，我想索取「'+p.n+'」的完整建案資料')}" target="_blank" rel="noopener">LINE 索取完整資料</a><a class="btn b-gold" href="#contact" data-proj="${esc(p.n)}">預約看屋</a></div></div>`;
+ if(dlg.showModal)dlg.showModal();else dlg.setAttribute('open','')});
+document.getElementById('pd-x').addEventListener('click',()=>dlg.close());
+dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close();const a=e.target.closest('[data-proj]');if(a){const n=document.getElementById('f-note');if(!n.value)n.value='想預約看屋：'+a.dataset.proj;dlg.close()}});
 
 const truth=[
  ['外國人別當盤子','建案與仲介的加價手法很常見。先學會查底價的方法，再談價格。','iKbf0sXuaiI'],
