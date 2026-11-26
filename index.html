@@ -90,6 +90,19 @@ nav .wrap{display:flex;align-items:center;gap:20px;padding:8px max(5vw,16px);fle
 .svc .ico{color:var(--gold2);margin-bottom:8px}
 .svc p{margin:4px 0 0;color:#c4cbd8;font-size:14px;line-height:1.6}
 @media(max-width:900px){.svcwrap{grid-template-columns:1fr}}@media(max-width:480px){.svcgrid{grid-template-columns:1fr}}
+/* projects */
+.projs{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-top:32px}
+.proj{background:var(--card);border:1px solid var(--bd);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.proj .pimg{aspect-ratio:16/10;background:linear-gradient(135deg,var(--navy),#1f3a66);position:relative;display:grid;place-items:end start;padding:14px}
+.proj .pimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tag{position:relative;background:var(--gold);color:#1a1206;font-size:13px;font-weight:700;border-radius:999px;padding:2px 12px}
+.proj .pb{padding:20px;display:flex;flex-direction:column;gap:6px;flex:1}
+.proj dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:8px 0 0;font-size:14px}
+.proj dt{color:var(--mute)}.proj dd{margin:0;font-weight:500}
+.proj .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:14px}
+.proj .acts .btn{min-height:44px;padding:0 16px;font-size:15px}
+.proj .vlink{font-size:14px;color:var(--gold);font-weight:700;text-decoration:none}
+.note{font-size:13px;color:var(--mute);margin-top:16px}
 /* truth */
 .truth{background:var(--soft)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px;margin-top:32px}
@@ -165,7 +178,7 @@ footer a{text-decoration:none}footer a:hover{text-decoration:underline}
 
 <nav><div class="wrap">
   <a class="brand" href="#top"><img src="img/mark-light.png" alt=""><span><b>曼谷地產小靖</b><small>BANGKOK CHING</small></span></a>
-  <div class="links"><a href="#about">關於我</a><a href="#services">服務項目</a><a href="#videos">影片</a><a href="#process">合作流程</a><a href="#faq">常見問題</a></div>
+  <div class="links"><a href="#about">關於我</a><a href="#services">服務項目</a><a href="#projects">推薦建案</a><a href="#videos">影片</a><a href="#process">合作流程</a><a href="#faq">常見問題</a></div>
   <a class="btn b-gold" href="#contact">預約諮詢</a>
 </div></nav>
 
@@ -218,6 +231,13 @@ footer a{text-decoration:none}footer a:hover{text-decoration:underline}
     <div class="svcimg"><img src="img/services.jpg" alt="曼谷地產小靖服務：購買房產、驗屋、交屋、二手出售、出租代管、裝潢代購" loading="lazy"></div>
     <div class="svcgrid" id="svc"></div>
   </div>
+</div></section>
+
+<section class="band" id="projects"><div class="wrap">
+  <div class="row"><div><h2>推薦建案</h2><p class="lead">小靖實地看過、親自篩選的曼谷建案。想看完整價目表、格局圖與最新優惠，按「LINE 詢問此建案」直接問我。</p></div>
+  <a class="btn b-line" href="https://line.me/R/ti/p/@bkkhouse" target="_blank" rel="noopener">在 LINE 看全部建案</a></div>
+  <div class="projs" id="projs"></div>
+  <p class="note">價格與戶數會隨銷售狀況變動，實際以建商最新報價為準。</p>
 </div></section>
 
 <section class="band truth"><div class="wrap">
@@ -326,6 +346,14 @@ const svc=[
  [svg('<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>'),'出租代管','招租、簽約、收租、繳費與維修，一手包辦。'],
  [svg('<path d="M4 18v-6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6M2 18h20M6 10V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3"/>'),'裝潢代購','家具家電採購與裝潢安排，交屋即可出租或入住。']];
 document.getElementById('svc').innerHTML=svc.map(([i,t,d])=>`<div class="svc"><div class="ico">${i}</div><h3>${t}</h3><p>${d}</p></div>`).join('');
+
+const LINEMSG=t=>'https://line.me/R/oaMessage/@bkkhouse/?'+encodeURIComponent(t);
+const projs=[
+ {n:'XT Ekkamai',tag:'富人區・Ekkamai',dev:'Sansiri',area:'Ekkamai（日本區）',price:'不到 400 萬泰銖起',pts:'私人會所、寵物友善公寓',v:'De28UVDn_oQ',img:''},
+ {n:'Aspire Rama 4',tag:'市中心・素坤逸',dev:'AP Thailand',area:'Rama 4／素坤逸生活圈',price:'總價 200 多萬泰銖起',pts:'近 BTS 捷運、頂樓河景視野',v:'SCwusYCP1Zg',img:''}];
+const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+document.getElementById('projs').innerHTML=projs.map(p=>`<article class="proj"><div class="pimg">${p.img?`<img src="${esc(p.img)}" alt="${esc(p.n)}" loading="lazy">`:''}<span class="tag">${esc(p.tag)}</span></div><div class="pb"><h3>${esc(p.n)}</h3><dl><dt>開發商</dt><dd>${esc(p.dev)}</dd><dt>地段</dt><dd>${esc(p.area)}</dd><dt>價格</dt><dd>${esc(p.price)}</dd><dt>特色</dt><dd>${esc(p.pts)}</dd></dl>${p.v?`<a class="vlink" href="https://www.youtube.com/watch?v=${esc(p.v)}" target="_blank" rel="noopener">看小靖實地開箱影片</a>`:''}<div class="acts"><a class="btn b-line" href="${LINEMSG('你好，我想了解「'+p.n+'」的價格與格局')}" target="_blank" rel="noopener">LINE 詢問此建案</a><a class="btn b-ghost" href="#contact" data-proj="${esc(p.n)}">預約看屋</a></div></div></article>`).join('');
+document.getElementById('projs').addEventListener('click',e=>{const a=e.target.closest('[data-proj]');if(!a)return;const n=document.getElementById('f-note');if(!n.value)n.value='想預約看屋：'+a.dataset.proj;});
 
 const truth=[
  ['外國人別當盤子','建案與仲介的加價手法很常見。先學會查底價的方法，再談價格。','iKbf0sXuaiI'],
